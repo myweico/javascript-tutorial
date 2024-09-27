@@ -317,15 +317,15 @@ d.toTimeString() // "00:00:00 GMT+0800 (CST)"
 var d = new Date(2013, 0, 1);
 
 d.toLocaleString()
-// 中文版浏览器为"2013年1月1日 上午12:00:00"
+// 中文版浏览器为"2013/1/1 00:00:00"
 // 英文版浏览器为"1/1/2013 12:00:00 AM"
 
 d.toLocaleDateString()
-// 中文版浏览器为"2013年1月1日"
+// 中文版浏览器为"2013/1/1"
 // 英文版浏览器为"1/1/2013"
 
 d.toLocaleTimeString()
-// 中文版浏览器为"上午12:00:00"
+// 中文版浏览器为"00:00:00"
 // 英文版浏览器为"12:00:00 AM"
 ```
 
@@ -337,28 +337,38 @@ dateObj.toLocaleDateString([locales[, options]])
 dateObj.toLocaleTimeString([locales[, options]])
 ```
 
-这两个参数中，`locales`是一个指定所用语言的字符串，`options`是一个配置对象。下面是`locales`的例子。
+这两个参数中，`locales`是一个指定所用语言的字符串，`options`是一个配置对象。下面是`locales`的例子，分别采用`en-US`和`zh-CN`语言设定。
 
 ```javascript
 var d = new Date(2013, 0, 1);
 
 d.toLocaleString('en-US') // "1/1/2013, 12:00:00 AM"
-d.toLocaleString('zh-CN') // "2013/1/1 上午12:00:00"
+d.toLocaleString('zh-CN') // "2013/1/1 00:00:00"
 
 d.toLocaleDateString('en-US') // "1/1/2013"
 d.toLocaleDateString('zh-CN') // "2013/1/1"
 
 d.toLocaleTimeString('en-US') // "12:00:00 AM"
-d.toLocaleTimeString('zh-CN') // "上午12:00:00"
+d.toLocaleTimeString('zh-CN') // "00:00:00"
 ```
 
-下面是`options`的例子。
+`options`配置对象有以下属性。
+
+- `dateStyle`：可能的值为`full`、`long`、`medium`、`short`。
+- `timeStyle`：可能的值为`full`、`long`、`medium`、`short`。
+- `month`：可能的值为`numeric`、`2-digit`、`long`、`short`、`narrow`。
+- `year`：可能的值为`numeric`、`2-digit`。
+- `weekday`：可能的值为`long`、`short`、`narrow`。
+- `day`、`hour`、`minute`、`second`：可能的值为`numeric`、`2-digit`。
+- `timeZone`：可能的值为 IANA 的时区数据库。
+- `timeZoneName`：可能的值为`long`、`short`。
+- `hour12`：24小时周期还是12小时周期，可能的值为`true`、`false`。
+
+下面是用法实例。
 
 ```javascript
 var d = new Date(2013, 0, 1);
 
-// 时间格式
-// 下面的设置是，星期和月份为完整文字，年份和日期为数字
 d.toLocaleDateString('en-US', {
   weekday: 'long',
   year: 'numeric',
@@ -367,7 +377,13 @@ d.toLocaleDateString('en-US', {
 })
 // "Tuesday, January 1, 2013"
 
-// 指定时区
+d.toLocaleDateString('en-US', {
+  day: "2-digit",
+  month: "long",
+  year: "2-digit"
+});
+// "January 01, 13"
+
 d.toLocaleTimeString('en-US', {
   timeZone: 'UTC',
   timeZoneName: 'short'
@@ -380,7 +396,6 @@ d.toLocaleTimeString('en-US', {
 })
 // "12:00:00 AM China Standard Time"
 
-// 小时周期为12还是24
 d.toLocaleTimeString('en-US', {
   hour12: false
 })
@@ -464,7 +479,7 @@ d.getUTCDate() // 5
 - `setDate(date)`：设置实例对象对应的每个月的几号（1-31），返回改变后毫秒时间戳。
 - `setFullYear(year [, month, date])`：设置四位年份。
 - `setHours(hour [, min, sec, ms])`：设置小时（0-23）。
-- `setMilliseconds()`：设置毫秒（0-999）。
+- `setMilliseconds(ms)`：设置毫秒（0-999）。
 - `setMinutes(min [, sec, ms])`：设置分钟（0-59）。
 - `setMonth(month [, date])`：设置月份（0-11）。
 - `setSeconds(sec [, ms])`：设置秒（0-59）。
@@ -480,7 +495,7 @@ d.setDate(9) // 1357660800000
 d // Wed Jan 09 2013 00:00:00 GMT+0800 (CST)
 ```
 
-`set*`方法的参数都会自动折算。以`setDate`为例，如果参数超过当月的最大天数，则向下一个月顺延，如果参数是负数，表示从上个月的最后一天开始减去的天数。
+`set*`方法的参数都会自动折算。以`setDate()`为例，如果参数超过当月的最大天数，则向下一个月顺延，如果参数是负数，表示从上个月的最后一天开始减去的天数。
 
 ```javascript
 var d1 = new Date('January 6, 2013');
@@ -490,9 +505,11 @@ d1 // Fri Feb 01 2013 00:00:00 GMT+0800 (CST)
 
 var d2 = new Date ('January 6, 2013');
 
-d.setDate(-1) // 1356796800000
-d // Sun Dec 30 2012 00:00:00 GMT+0800 (CST)
+d2.setDate(-1) // 1356796800000
+d2 // Sun Dec 30 2012 00:00:00 GMT+0800 (CST)
 ```
+
+上面代码中，`d1.setDate(32)`将日期设为1月份的32号，因为1月份只有31号，所以自动折算为2月1日。`d2.setDate(-1)`表示设为上个月的倒数第二天，即12月30日。
 
 `set`类方法和`get`类方法，可以结合使用，得到相对时间。
 
@@ -528,5 +545,5 @@ d // Sun Jan 06 2013 06:00:00 GMT+0800 (CST)
 
 ## 参考链接
 
-- Rakhitha Nimesh，[Getting Started with the Date Object](http://jspro.com/raw-javascript/beginners-guide-to-javascript-date-and-time/)
-- Ilya Kantor, [Date/Time functions](http://javascript.info/tutorial/datetime-functions)
+- Rakhitha Nimesh，[Getting Started with the Date Object](https://www.sitepoint.com/beginners-guide-to-javascript-date-and-time/)
+- Ilya Kantor, [Date/Time functions](https://javascript.info/date)

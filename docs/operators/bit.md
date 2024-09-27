@@ -303,7 +303,7 @@ var FLAG_D = 8; // 1000
 
 上面代码设置 A、B、C、D 四个开关，每个开关分别占有一个二进制位。
 
-然后，就可以用二进制与运算检验，当前设置是否打开了指定开关。
+然后，就可以用二进制与运算，检查当前设置是否打开了指定开关。
 
 ```javascript
 var flags = 5; // 二进制的0101
@@ -331,6 +331,8 @@ var mask = FLAG_A | FLAG_B | FLAG_D;
 flags = flags | mask;
 ```
 
+上面代码中，计算后得到的`flags`变量，代表三个开关的二进制位都打开了。
+
 二进制与运算可以将当前设置中凡是与开关设置不一样的项，全部关闭。
 
 ```javascript
@@ -351,6 +353,6 @@ flags = ~flags;
 
 ## 参考链接
 
-- Michal Budzynski, [JavaScript: The less known parts. Bitwise Operators](http://michalbe.blogspot.co.uk/2013/03/javascript-less-known-parts-bitwise.html)
+- Michal Budzynski, [JavaScript: The less known parts. Bitwise Operators](https://michalbe.blogspot.com/2013/03/javascript-less-known-parts-bitwise.html)
 - Axel Rauschmayer, [Basic JavaScript for the impatient programmer](http://www.2ality.com/2013/06/basic-javascript.html)
 - Mozilla Developer Network, [Bitwise Operators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators)

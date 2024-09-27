@@ -12,7 +12,7 @@
 
 > - 协议相同
 > - 域名相同
-> - 端口相同
+> - 端口相同（这点可以忽略，详见下文）
 
 举例来说，`http://www.example.com/dir/page.html`这个网址，协议是`http://`，域名是`www.example.com`，端口是`80`（默认端口可以省略），它的同源情况如下。
 
@@ -22,11 +22,13 @@
 - `http://www.example.com:81/dir/other.html`：不同源（端口不同）
 - `https://www.example.com/dir/page.html`：不同源（协议不同）
 
+注意，标准规定端口不同的网址不是同源（比如8000端口和8001端口不是同源），但是浏览器没有遵守这条规定。实际上，同一个网域的不同端口，是可以互相读取 Cookie 的。
+
 ### 目的
 
 同源政策的目的，是为了保证用户信息的安全，防止恶意的网站窃取数据。
 
-设想这样一种情况：A 网站是一家银行，用户登录以后，A 网站在用户的机器上设置了一个 Cookie，包含了一些隐私信息（比如存款总额）。用户离开 A 网站以后，又去访问 B 网站，如果没有同源限制，B 网站可以读取 A 网站的 Cookie，那么隐私信息就会泄漏。更可怕的是，Cookie 往往用来保存用户的登录状态，如果用户没有退出登录，其他网站就可以冒充用户，为所欲为。因为浏览器同时还规定，提交表单不受同源政策的限制。
+设想这样一种情况：A 网站是一家银行，用户登录以后，A 网站在用户的机器上设置了一个 Cookie，包含了一些隐私信息。用户离开 A 网站以后，又去访问 B 网站，如果没有同源限制，B 网站可以读取 A 网站的 Cookie，那么隐私就泄漏了。更可怕的是，Cookie 往往用来保存用户的登录状态，如果用户没有退出登录，其他网站就可以冒充用户，为所欲为。因为浏览器同时还规定，提交表单不受同源政策的限制。
 
 由此可见，同源政策是必需的，否则 Cookie 可以共享，互联网就毫无安全可言了。
 
@@ -56,7 +58,7 @@
 - window.focus()
 - window.postMessage()
 
-上面的九个属性之中，只有`window.location`是可读写的，其他八个全部都是只读。而且，即使是`location`对象，非同源的情况下，也只允许调用`location.replace`方法和写入`location.href`属性。
+上面的九个属性之中，只有`window.location`是可读写的，其他八个全部都是只读。而且，即使是`location`对象，非同源的情况下，也只允许调用`location.replace()`方法和写入`location.href`属性。
 
 虽然这些限制是必要的，但是有时很不方便，合理的用途也受到影响。下面介绍如何规避上面的限制。
 
@@ -87,10 +89,10 @@ var allCookie = document.cookie;
 
 注意，这种方法只适用于 Cookie 和 iframe 窗口，LocalStorage 和 IndexedDB 无法通过这种方法，规避同源政策，而要使用下文介绍 PostMessage API。
 
-另外，服务器也可以在设置 Cookie 的时候，指定 Cookie 的所属域名为一级域名，比如`.example.com`。
+另外，服务器也可以在设置 Cookie 的时候，指定 Cookie 的所属域名为一级域名，比如`example.com`。
 
 ```http
-Set-Cookie: key=value; domain=.example.com; path=/
+Set-Cookie: key=value; domain=example.com; path=/
 ```
 
 这样的话，二级域名和三级域名不用做任何设置，都可以读取这个 Cookie。
@@ -192,7 +194,7 @@ window.addEventListener('message', function (e) {
 `message`事件的参数是事件对象`event`，提供以下三个属性。
 
 > - `event.source`：发送消息的窗口
-> - `event.origin`: 消息发向的网址
+> - `event.origin`: 消息发送者的源（origin），即协议、域名、端口。
 > - `event.data`: 消息内容
 
 下面的例子是，子窗口通过`event.source`属性引用父窗口，然后发送消息。
@@ -206,7 +208,7 @@ function receiveMessage(event) {
 
 上面代码有几个地方需要注意。首先，`receiveMessage`函数里面没有过滤信息的来源，任意网址发来的信息都会被处理。其次，`postMessage`方法中指定的目标窗口的网址是一个星号，表示该信息可以向任意网址发送。通常来说，这两种做法是不推荐的，因为不够安全，可能会被恶意利用。
 
-`event.origin`属性可以过滤不是发给本窗口的消息。
+`event.origin`属性可以过滤非许可地址发来的消息。
 
 ```javascript
 window.addEventListener('message', receiveMessage);

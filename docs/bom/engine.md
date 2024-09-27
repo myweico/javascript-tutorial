@@ -6,7 +6,7 @@ JavaScript 是浏览器的内置脚本语言。也就是说，浏览器内置了
 
 ## 代码嵌入网页的方法
 
-网页中嵌入 JavaScript 代码，主要有三种方法。
+网页中嵌入 JavaScript 代码，主要有四种方法。
 
 - `<script>`元素直接嵌入代码。
 - `<script>`标签加载外部脚本
@@ -15,7 +15,7 @@ JavaScript 是浏览器的内置脚本语言。也就是说，浏览器内置了
 
 ### script 元素嵌入代码
 
-`<script>`元素内部可以直接写 JavaScript 代码。
+`<script>`元素内部可以直接写入 JavaScript 代码。
 
 ```html
 <script>
@@ -372,13 +372,13 @@ foo.style.marginTop = '30px';
 - 使用`documentFragment`操作 DOM
 - 动画使用`absolute`定位或`fixed`定位，这样可以减少对其他元素的影响。
 - 只在必要时才显示隐藏元素。
-- 使用`window.requestAnimationFrame()`，因为它可以把代码推迟到下一次重流时执行，而不是立即要求页面重流。
+- 使用`window.requestAnimationFrame()`，因为它可以把代码推迟到下一次重绘之前执行，而不是立即要求页面重绘。
 - 使用虚拟 DOM（virtual DOM）库。
 
 下面是一个`window.requestAnimationFrame()`对比效果的例子。
 
 ```javascript
-// 重绘代价高
+// 重流代价高
 function doubleHeight(element) {
   var currentHeight = element.clientHeight;
   element.style.height = (currentHeight * 2) + 'px';
@@ -436,4 +436,4 @@ JavaScript 是一种解释型语言，也就是说，它不需要编译，由解
 - Axel Rauschmayer, [ECMAScript 6 promises (1/2): foundations](http://www.2ality.com/2014/09/es6-promises-foundations.html)
 - Daniel Imms, [async vs defer attributes](http://www.growingwiththeweb.com/2014/02/async-vs-defer-attributes.html)
 - Craig Buckler, [Load Non-blocking JavaScript with HTML5 Async and Defer](http://www.sitepoint.com/non-blocking-async-defer/)
-- Domenico De Felice, [How browsers work](http://domenicodefelice.blogspot.sg/2015/08/how-browsers-work.html?t=2)
+- Domenico De Felice, [How browsers work](https://domenicodefelice.blogspot.com/2015/08/how-browsers-work.html)
